@@ -2,16 +2,63 @@
 
 #include "SDL2DisplayConsumer.h"
 
+// void SDL2DisplayConsumer::InitRenderer(int width, int heigth) {
+//   this->width = width;
+//   this->heigth = heigth;
+
+//   window =
+//       SDL_CreateWindow("PCM", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+//                        width, heigth, SDL_WINDOW_ALLOW_HIGHDPI);
+
+//   renderer = SDL_CreateRenderer(
+//       window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
+//   if (renderer == nullptr) {
+//     std::cerr << "Failed to create SDL renderer: " << SDL_GetError()
+//               << std::endl;
+//     throw 0;
+//   }
+// }
+
 void SDL2DisplayConsumer::InitRenderer(int width, int heigth) {
   this->width = width;
   this->heigth = heigth;
 
-  window =
-      SDL_CreateWindow("PCM", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                       width, heigth, SDL_WINDOW_ALLOW_HIGHDPI);
+  // Создаём окно в полноэкранном режиме
+  window = SDL_CreateWindow(
+      "PCM", 
+      SDL_WINDOWPOS_CENTERED, 
+      SDL_WINDOWPOS_CENTERED,
+      width, 
+      heigth, 
+      SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_FULLSCREEN_DESKTOP
+  );
+
+  // Если не удалось создать полноэкранное окно, попробуем создать обычное
+  if (window == nullptr) {
+    std::cerr << "Failed to create fullscreen window, trying windowed mode: " 
+              << SDL_GetError() << std::endl;
+    
+    window = SDL_CreateWindow(
+        "PCM", 
+        SDL_WINDOWPOS_CENTERED, 
+        SDL_WINDOWPOS_CENTERED,
+        width, 
+        heigth, 
+        SDL_WINDOW_ALLOW_HIGHDPI
+    );
+  }
+
+  if (window == nullptr) {
+    std::cerr << "Failed to create SDL window: " << SDL_GetError() << std::endl;
+    throw 0;
+  }
 
   renderer = SDL_CreateRenderer(
-      window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+      window, 
+      -1, 
+      SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
+  );
 
   if (renderer == nullptr) {
     std::cerr << "Failed to create SDL renderer: " << SDL_GetError()
